@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latin York RP - Launcher</title>
+
+<style>
+:root{
+    --green:#00d084;
+    --green2:#00b978;
+    --blue:#1688ff;
+    --bg:#050909;
+    --panel:rgba(5,10,11,.86);
+    --panel2:rgba(8,13,14,.92);
+    --line:rgba(255,255,255,.08);
+    --text:#f4f7f7;
+    --muted:#858f8f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    color:var(--text);
+    background:#050707;
+    font-size:12px;
+}
+
+/* =========================================================
+   CONFIGURACIÓN — CAMBIA AQUÍ EL VIDEO DE YOUTUBE
+========================================================= */
+#youtube-bg{
+    position:fixed;inset:0;z-index:-5;overflow:hidden;
+    pointer-events:none;
+    background:
+      radial-gradient(circle at 20% 30%,rgba(0,208,132,.18),transparent 45%),
+      radial-gradient(circle at 80% 70%,rgba(22,136,255,.16),transparent 45%),
+      #071010;
+}
+#youtube-bg iframe{
+    position:absolute;top:50%;left:50%;
+    width:177.78vh;height:100vh;
+    min-width:100vw;min-height:56.25vw;
+    transform:translate(-50%,-50%) scale(1.08);
+    border:0;pointer-events:none;
+}
+.bg-overlay{
+    position:fixed;inset:0;z-index:-4;
+    background:
+      linear-gradient(90deg,rgba(0,10,11,.82),rgba(0,13,14,.45) 52%,rgba(0,5,6,.78)),
+      linear-gradient(180deg,rgba(0,0,0,.50),rgba(0,0,0,.76));
+}
+.bg-vignette{
+    position:fixed;inset:0;z-index:-3;
+    box-shadow:inset 0 0 170px rgba(0,0,0,.9);
+    pointer-events:none;
+}
+
+.app{height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.topbar{
+    height:70px;min-height:70px;
+    display:flex;align-items:center;
+    padding:0 24px;gap:20px;
+    background:rgba(3,8,9,.79);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    backdrop-filter:blur(14px);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:138px}
+.logo{
+    width:28px;height:28px;border-radius:4px;
+    display:grid;place-items:center;
+    background:var(--green);color:#06100c;
+    font-size:12px;font-weight:1000;
+}
+.brand strong{font-size:13px;line-height:12px}
+.brand .rp{display:block;color:var(--green);font-weight:900;font-size:9px;letter-spacing:1px}
+.brand small{display:block;color:#677171;font-size:6px;letter-spacing:1px;margin-top:3px}
+
+.nav{
+    display:flex;align-items:center;
+    height:38px;flex:1;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:6px;overflow:hidden;
+    max-width:500px;
+}
+.nav button{
+    height:100%;flex:1;border:0;
+    background:transparent;color:#7f8989;
+    font-size:9px;font-weight:800;
+    letter-spacing:.4px;cursor:pointer;
+    transition:.2s;
+}
+.nav button:hover{background:rgba(255,255,255,.04);color:#ddd}
+.nav button.active{background:var(--green);color:#04100b}
+
+.tools{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tool{
+    height:34px;min-width:44px;padding:0 8px;
+    display:flex;align-items:center;justify-content:center;
+    gap:5px;border:1px solid rgba(255,255,255,.07);
+    border-radius:6px;background:rgba(255,255,255,.025);
+    color:#758080;font-size:7px;font-weight:800;
+}
+.tool b{color:var(--green)}
+.status{padding-left:12px}
+.status small{display:block;color:#707a7a;font-size:6px;margin-bottom:3px}
+.status strong{font-size:7px;color:var(--green)}
+
+/* PAGES */
+.content{
+    flex:1;min-height:0;overflow:auto;
+    padding:20px 20px 30px;
+}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:rgba(0,208,132,.35);border-radius:20px}
+.page{display:none;max-width:1180px;margin:auto}
+.page.active{display:block}
+
+/* =========================================================
+   LANZADOR — DISEÑO DE LAS IMÁGENES ENVIADAS
+========================================================= */
+.hero{
+    display:grid;grid-template-columns:1.75fr 1fr;
+    gap:14px;margin-bottom:14px;
+}
+.hero-main,.hero-side{
+    min-height:325px;border:1px solid rgba(255,255,255,.10);
+    border-radius:12px;background:rgba(3,11,12,.68);
+    backdrop-filter:blur(8px);
+}
+.hero-main{padding:28px 26px;display:flex;flex-direction:column;justify-content:center}
+.eyebrow,.section-label{
+    color:var(--green);font-size:8px;font-weight:900;
+    letter-spacing:1.4px;text-transform:uppercase;
+}
+.hero-main h1{
+    margin-top:12px;font-size:56px;line-height:.86;
+    letter-spacing:-2px;font-weight:1000;
+}
+.hero-main h1 span{
+    display:block;color:transparent;
+    -webkit-text-stroke:2px #727b7b;
+}
+.hero-main p{
+    max-width:650px;margin-top:18px;
+    color:#c5cccc;font-size:12px;line-height:1.75;
+}
+.hero-actions{display:flex;align-items:center;gap:10px;margin-top:22px}
+.connect{
+    border:0;background:var(--green);color:#04100b;
+    height:38px;padding:0 22px;border-radius:5px;
+    font-size:9px;font-weight:1000;cursor:pointer;
+}
+.ip{
+    height:38px;padding:0 11px;display:flex;align-items:center;
+    background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.07);
+    border-radius:5px;color:#b9c0c0;font-family:monospace;font-size:8px;
+}
+.hero-side{padding:18px}
+.env{
+    height:100%;display:flex;flex-direction:column;
+}
+.env p{margin-top:10px;color:#b8c0c0;font-size:9px;line-height:1.7}
+.env-box{
+    margin-top:auto;border-top:1px solid rgba(255,255,255,.07);
+}
+.env-row{
+    height:44px;border-bottom:1px solid rgba(255,255,255,.06);
+    display:flex;align-items:center;justify-content:space-between;
+    font-family:monospace;
+}
+.env-row small{color:#687171;font-size:7px}
+.env-row strong{font-size:8px;color:#d9dddd}
+.env-row:last-child strong{color:var(--green)}
+
+.steps{
+    border:1px solid rgba(255,255,255,.07);
+    background:rgba(3,9,10,.80);
+    border-radius:10px;padding:14px;margin-bottom:14px;
+}
+.steps-title{margin-bottom:12px}
+.step-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.step{
+    min-height:82px;padding:13px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:6px;background:rgba(255,255,255,.012);
+}
+.step h4{color:var(--green);font-size:8px;margin-bottom:9px}
+.step p{color:#8d9696;font-size:8px;line-height:1.55}
+
+.downloads{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;
+    margin-bottom:14px;
+}
+.download-card{
+    background:rgba(4,8,9,.91);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:11px;padding:18px;
+}
+.download-card.blue{border-color:rgba(22,136,255,.14)}
+.card-head{display:flex;justify-content:space-between;align-items:center}
+.badge{
+    color:var(--green);font-size:7px;font-weight:900;
+    letter-spacing:1px;background:rgba(0,208,132,.08);
+    padding:6px 8px;border-radius:3px;
+}
+.blue .badge{color:#258cff;background:rgba(22,136,255,.08)}
+.mirror{color:#747d7d;font-size:7px}
+.download-card h2{font-size:13px;margin-top:13px}
+.download-card p{color:#8b9494;font-size:8px;line-height:1.7;margin-top:8px;min-height:27px}
+.download-btn{
+    width:100%;height:30px;margin-top:12px;
+    border:0;border-radius:5px;background:var(--green);
+    color:#04100b;font-size:7px;font-weight:1000;cursor:pointer;
+}
+.blue .download-btn{background:#f0f0f0;color:#111}
+
+.bottom-grid{
+    display:grid;grid-template-columns:1.65fr .9fr;gap:14px;
+}
+.news,.technical{
+    background:rgba(4,8,9,.92);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:11px;padding:17px;
+}
+.news-title,.technical-title{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:12px;
+}
+.news-title h3,.technical-title h3{
+    color:var(--green);font-size:8px;letter-spacing:1px;
+}
+.latest{color:var(--green);font-size:6px;background:rgba(0,208,132,.08);padding:5px}
+.news-item{
+    padding:13px;border:1px solid rgba(255,255,255,.07);
+    border-radius:7px;margin-top:8px;
+}
+.news-item h4{color:#cbd1d1;font-size:8px}
+.news-item h4 span{color:#697272;float:right;font-weight:400}
+.news-item p{color:#8a9393;font-size:8px;line-height:1.6;margin-top:7px}
+.tech-row{
+    min-height:38px;display:flex;align-items:center;
+    justify-content:space-between;border:1px solid rgba(255,255,255,.06);
+    border-radius:5px;margin-top:7px;padding:0 10px;
+}
+.tech-row small{color:#687171;font-size:7px}
+.tech-row strong{font-size:7px}
+.tech-row strong.green{color:var(--green)}
+
+/* =========================================================
+   GUÍA DE ROL — AQUÍ SE MOVIÓ EL CONTENIDO ANTERIOR
+========================================================= */
+.guide-title{
+    background:rgba(4,9,10,.88);border:1px solid rgba(255,255,255,.07);
+    border-radius:12px;padding:22px;margin-bottom:14px;
+}
+.guide-title h1{font-size:24px;margin-top:7px}
+.guide-title p{color:#8d9696;font-size:10px;margin-top:8px}
+.guide-grid{display:grid;grid-template-columns:320px 1fr;gap:14px}
+.guide-sidebar,.guide-main{
+    background:rgba(4,9,10,.88);border:1px solid rgba(255,255,255,.07);
+    border-radius:12px;padding:18px;
+}
+.guide-list button{
+    width:100%;height:42px;text-align:left;padding:0 12px;
+    border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);
+    color:#8a9494;border-radius:6px;margin-top:7px;cursor:pointer;
+    font-size:9px;font-weight:800;
+}
+.guide-list button.active{border-color:rgba(0,208,132,.45);color:var(--green);background:rgba(0,208,132,.06)}
+.guide-section{display:none}
+.guide-section.active{display:block}
+.guide-section h2{font-size:18px;margin-bottom:10px}
+.guide-section>p{color:#aeb6b6;font-size:10px;line-height:1.75;margin-bottom:15px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.role-card{
+    padding:15px;border:1px solid rgba(255,255,255,.07);
+    border-radius:8px;background:rgba(0,0,0,.18);
+}
+.role-card h3{color:var(--green);font-size:9px;margin-bottom:7px}
+.role-card p{color:#858e8e;font-size:8px;line-height:1.65}
+
+
+.sound-hint{
+    position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;
+    padding:10px 18px;border-radius:30px;cursor:pointer;
+    background:rgba(0,208,132,.95);color:#04100b;
+    font-size:11px;font-weight:900;letter-spacing:.4px;
+    box-shadow:0 6px 24px rgba(0,0,0,.5);animation:hintpulse 1.8s infinite;
+}
+.sound-hint.hide{display:none}
+@keyframes hintpulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
+
+/* =========================================================
+   YORKY AI
+========================================================= */
+.yk-grid{
+    display:grid;grid-template-columns:350px 1fr;gap:20px;
+    height:calc(100vh - 70px - 52px);min-height:520px;
+}
+.yk-side,.yk-chat{
+    background:rgba(4,8,9,.90);border:1px solid rgba(255,255,255,.09);
+    border-radius:14px;backdrop-filter:blur(10px);min-height:0;
+}
+.yk-side{padding:16px;display:flex;flex-direction:column;overflow:auto}
+.yk-brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.yk-icon{
+    width:30px;height:30px;border-radius:7px;display:grid;place-items:center;
+    background:rgba(0,208,132,.12);border:1px solid rgba(0,208,132,.4);
+    color:var(--green);font-size:16px;font-weight:900;
+}
+.yk-brand strong{display:block;font-size:11px;letter-spacing:1px;font-family:monospace}
+.yk-brand small{display:block;color:#6d7777;font-size:8px;margin-top:3px}
+.yk-desc{color:#a5aeae;font-size:11px;line-height:1.65;margin-bottom:16px}
+.yk-desc b{color:#fff}
+.yk-tools-title{
+    color:var(--green);font-size:8px;font-weight:900;letter-spacing:1px;
+    font-family:monospace;margin-bottom:10px;
+}
+.yk-tool{
+    width:100%;display:flex;align-items:center;gap:11px;text-align:left;
+    padding:12px;margin-bottom:9px;border-radius:8px;cursor:pointer;
+    border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);
+    color:var(--text);transition:.2s;
+}
+.yk-tool:hover{border-color:rgba(0,208,132,.45);background:rgba(0,208,132,.05)}
+.yk-tool .ic{font-size:14px;width:18px;text-align:center;color:var(--green)}
+.yk-tool .ic.blue{color:#1688ff}
+.yk-tool .ic.purple{color:#b07bff}
+.yk-tool .tx{flex:1}
+.yk-tool strong{display:block;font-size:9px;letter-spacing:.4px}
+.yk-tool small{display:block;color:#78827f;font-size:8px;margin-top:3px}
+.yk-tool .ar{color:#566}
+.yk-tip{
+    margin-top:auto;padding:13px;border-radius:8px;
+    border:1px solid rgba(0,208,132,.25);background:rgba(0,208,132,.05);
+    font-size:9px;color:#aeb8b6;line-height:1.6;
+}
+.yk-tip b.t{display:block;color:var(--green);font-family:monospace;font-size:8px;letter-spacing:1px;margin-bottom:6px}
+.yk-tip code,.msg code{
+    background:rgba(255,255,255,.1);padding:1px 5px;border-radius:3px;
+    font-family:monospace;color:#fff;
+}
+.yk-chat{display:flex;flex-direction:column;overflow:hidden}
+.yk-head{
+    display:flex;align-items:center;gap:11px;padding:14px 18px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+}
+.yk-avatar{
+    width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+    background:rgba(0,208,132,.15);border:1px solid rgba(0,208,132,.5);
+    color:var(--green);font-size:10px;font-weight:900;flex-shrink:0;
+}
+.yk-head strong{display:block;font-size:11px;letter-spacing:.5px;font-family:monospace}
+.yk-head small{display:block;font-size:8px;color:var(--green);margin-top:3px}
+.yk-head small.off{color:#e0a43a}
+.yk-clear{
+    margin-left:auto;height:26px;padding:0 12px;border-radius:4px;cursor:pointer;
+    border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);
+    color:#8a9494;font-size:8px;
+}
+.yk-clear:hover{color:#fff}
+.yk-msgs{flex:1;min-height:0;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+.yk-msgs::-webkit-scrollbar{width:6px}
+.yk-msgs::-webkit-scrollbar-thumb{background:rgba(0,208,132,.35);border-radius:20px}
+.msg{
+    max-width:78%;padding:14px 16px;border-radius:12px;
+    font-size:12px;line-height:1.65;word-wrap:break-word;
+    border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);
+    color:#e3e8e8;
+}
+.msg.user{
+    align-self:flex-end;background:rgba(0,208,132,.13);
+    border-color:rgba(0,208,132,.35);
+}
+.msg .li{display:block;padding-left:4px}
+.msg time{display:block;text-align:right;margin-top:8px;font-size:8px;color:#6b7575;font-family:monospace}
+.msg.typing{display:flex;gap:5px;align-items:center;padding:16px}
+.msg.typing i{width:6px;height:6px;border-radius:50%;background:var(--green);opacity:.4;animation:ykdot 1s infinite}
+.msg.typing i:nth-child(2){animation-delay:.15s}
+.msg.typing i:nth-child(3){animation-delay:.3s}
+@keyframes ykdot{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.yk-chips{
+    display:flex;gap:8px;padding:12px 18px;flex-wrap:wrap;
+    border-top:1px solid rgba(255,255,255,.07);
+}
+.yk-chip{
+    height:26px;padding:0 13px;border-radius:5px;cursor:pointer;
+    border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+    color:#c0c8c8;font-size:9px;transition:.2s;
+}
+.yk-chip:hover{border-color:var(--green);color:var(--green)}
+.yk-input{display:flex;gap:10px;padding:0 18px 18px}
+.yk-input input{
+    flex:1;height:44px;padding:0 15px;border-radius:7px;outline:none;
+    border:1px solid rgba(22,136,255,.35);background:rgba(10,30,70,.35);
+    color:#fff;font-size:12px;font-family:inherit;
+}
+.yk-input input::placeholder{color:#6f7c8f}
+.yk-input input:focus{border-color:var(--green)}
+.yk-send{
+    width:44px;height:44px;border-radius:7px;cursor:pointer;font-size:15px;
+    border:1px solid rgba(0,208,132,.5);background:rgba(0,208,132,.15);color:var(--green);
+}
+.yk-send:disabled{opacity:.4;cursor:wait}
+
+/* RESPONSIVE */
+@media(max-width:950px){
+    .yk-grid{grid-template-columns:1fr;height:auto}
+    .yk-chat{height:70vh;min-height:460px}
+    .msg{max-width:92%}
+}
+
+@media(max-width:950px){
+    .tools .tool:nth-child(-n+3){display:none}
+    .hero{grid-template-columns:1fr}
+    .hero-side{min-height:220px}
+    .step-grid{grid-template-columns:1fr 1fr}
+    .bottom-grid,.guide-grid{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+    .topbar{padding:0 12px}
+    .brand{min-width:75px}.brand-text{display:none}
+    .nav button{font-size:7px}
+    .status{display:none}
+    .content{padding:12px}
+    .hero-main h1{font-size:43px}
+    .downloads{grid-template-columns:1fr}
+    .step-grid,.role-grid{grid-template-columns:1fr}
+}
+
+/* =========================================================
+   TRANSPARENCIA DE LA INTERFAZ
+   --ui controla todo: 1 = normal, 0.5 = más transparente, 0 = solo video.
+   También se cambia con el botón ◉ de la barra superior.
+========================================================= */
+:root{--ui:1}
+.bg-overlay{
+    background:
+      linear-gradient(90deg,rgba(0,10,11,calc(var(--ui)*.40)),rgba(0,13,14,calc(var(--ui)*.12)) 52%,rgba(0,5,6,calc(var(--ui)*.38))),
+      linear-gradient(180deg,rgba(0,0,0,calc(var(--ui)*.15)),rgba(0,0,0,calc(var(--ui)*.38)));
+}
+.bg-vignette{box-shadow:inset 0 0 170px rgba(0,0,0,calc(var(--ui)*.5))}
+.topbar{background:rgba(3,8,9,calc(var(--ui)*.45));backdrop-filter:blur(6px)}
+.hero-main,.hero-side{background:rgba(3,11,12,calc(var(--ui)*.34));backdrop-filter:blur(4px)}
+.steps{background:rgba(3,9,10,calc(var(--ui)*.40))}
+.download-card{background:rgba(4,8,9,calc(var(--ui)*.48))}
+.news,.technical{background:rgba(4,8,9,calc(var(--ui)*.48))}
+.guide-title,.guide-sidebar,.guide-main{background:rgba(4,9,10,calc(var(--ui)*.45))}
+.yk-side,.yk-chat{background:rgba(4,8,9,calc(var(--ui)*.46));backdrop-filter:blur(5px)}
+.msg{background:rgba(0,0,0,calc(var(--ui)*.30))}
+.msg.user{background:rgba(0,208,132,.20)}
+.yk-input input{background:rgba(10,30,70,calc(var(--ui)*.30))}
+.hero-main,.hero-side,.steps,.download-card,.news,.technical,.guide-title,
+.guide-sidebar,.guide-main,.yk-side,.yk-chat,.topbar{text-shadow:0 1px 4px rgba(0,0,0,.65)}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     CONFIGURACIÓN PRINCIPAL
+========================================================= -->
+<script>
+/* ID DEL VIDEO DE YOUTUBE DEL FONDO */
+const YOUTUBE_VIDEO_ID = "QxBSz5jBjec";
+
+/* VIDEO LOCAL (OPCIONAL, MÁS FIABLE QUE YOUTUBE)
+   Pon un archivo .mp4 junto al launcher, por ejemplo: "fondo.mp4"
+   Si lo dejas vacío se usa el video de YouTube. */
+const BACKGROUND_VIDEO_FILE = "";
+
+/* IA DE YORKY (Google Gemini)
+   Consigue una clave gratis en https://aistudio.google.com/apikey
+   Si la dejas vacía, Yorky responde en modo offline (respuestas básicas). */
+const GEMINI_API_KEY = "";
+const GEMINI_MODEL   = "gemini-3.8-flash";  /* si Google lo retira, cambia solo este nombre */
+
+/* NOMBRE DEL SERVIDOR */
+const SERVER_NAME = "LATIN YORK";
+
+/* CONEXIÓN */
+const SERVER_CONNECT_URL = "mtasa://65.75.210.216:20032";
+
+/* DESCARGAS */
+const GTA_DOWNLOAD_URL = "https://www.mediafire.com/file/42xkldiw4oc75t2/GTASAbyChuli.rar/file";
+const MTA_DOWNLOAD_URL = "https://multitheftauto.com/";
+</script>
+
+<div id="youtube-bg"></div>
+<div class="bg-overlay"></div>
+<div class="bg-vignette"></div>
+
+<div class="app">
+
+<header class="topbar">
+    <div class="brand">
+        <div class="logo">LY</div>
+        <div class="brand-text">
+            <strong>LATIN YORK</strong>
+            <span class="rp">RP</span>
+            <small>MTA LAUNCHER · V1.0.9</small>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <button class="nav-btn active" data-page="launcher">LANZADOR</button>
+        <button class="nav-btn" data-page="guide">GUÍA DE<br>ROL</button>
+        <button class="nav-btn" data-page="yorky"># YORKY<br>AI</button>
+    </nav>
+
+    <div class="tools">
+        <div class="tool">☀ <b>AMBIENTE</b></div>
+        <div class="tool"><b>23°</b> FPS</div>
+        <div class="tool" id="uiBtn" title="Cambiar transparencia de la interfaz" style="cursor:pointer">◉</div>
+        <div class="tool snd" id="soundBtn" title="Silenciar / activar sonido" style="cursor:pointer">🔊</div>
+        <div class="tool snd" id="musicBtn" title="Activar/silenciar música" style="cursor:pointer">🎵 <b id="musicLbl">MÚSICA ON</b></div>
+        <div class="status">
+            <small>ESTADO DEL SERVIDOR</small>
+            <strong>● EN LÍNEA SEGURO</strong>
+        </div>
+    </div>
+</header>
+
+<main class="content">
+
+<!-- =====================================================
+     LANZADOR — NUEVO CONTENIDO DE LAS IMÁGENES
+===================================================== -->
+<section id="launcher" class="page active">
+
+    <div class="hero">
+        <article class="hero-main">
+            <div class="eyebrow">● MULTI THEFT AUTO: SAN ANDREAS EDITION</div>
+            <h1>LATIN<span>YORK</span></h1>
+            <p>
+                Siente la energía de la Gran Manzana con herencia de barrio latino.
+                Un servidor diseñado para revivir las mejores mecánicas de rol organizado,
+                tráfico urbano, pandillas de Nueva York y facciones policiales NYPD impecables.
+            </p>
+
+            <div class="hero-actions">
+                <button class="connect" onclick="connectServer()">CONECTAR AL SERVIDOR　→</button>
+                <div class="ip">65.75.210.216:20032</div>
+            </div>
+        </article>
+
+        <article class="hero-side">
+            <div class="env">
+                <div>
+                    <div class="eyebrow">◷ TIEMPO Y ENTORNO</div>
+                    <p>
+                        Farandula, clima dinámico y el pulso real de la Gran Manzana
+                        neoyorquina funcionando en tiempo real las 24 horas del día.
+                    </p>
+                </div>
+
+                <div class="env-box">
+                    <div class="env-row">
+                        <small>HORA GMT-4:</small>
+                        <strong id="clock">--:--:-- AM EST</strong>
+                    </div>
+                    <div class="env-row">
+                        <small>ZONA HORARIA:</small>
+                        <strong>New York</strong>
+                    </div>
+                    <div class="env-row">
+                        <small>CLIMA ACTUAL:</small>
+                        <strong>10 Temp/Llovizna</strong>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <section class="steps">
+        <div class="steps-title section-label">◎ ¿PROBLEMAS PARA CONECTARTE AUTOMÁTICAMENTE? PASO A PASO:</div>
+        <div class="step-grid">
+            <div class="step">
+                <h4>1. Descargar GTA San Andreas</h4>
+                <p>Asegúrate de contar con una copia limpia de GTA San Andreas en tu PC, sin mods ni conflictos.</p>
+            </div>
+            <div class="step">
+                <h4>2. Instalar el Cliente MTA</h4>
+                <p>Descarga e instala el software cliente Multi Theft Auto: San Andreas (MTA:SA) desde su sitio.</p>
+            </div>
+            <div class="step">
+                <h4>3. Abrir MTA de Forma Manual</h4>
+                <p>Ejecuta MTA desde tu icono en el escritorio como administrador si es posible.</p>
+            </div>
+            <div class="step">
+                <h4>4. Pestaña Direct Connect</h4>
+                <p>Haz clic en Conexión Directa e introduce la dirección IP del servidor y el puerto 2513.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="downloads">
+        <article class="download-card">
+            <div class="card-head">
+                <span class="badge">1. BASE DE JUEGO OBLIGATORIA</span>
+                <span class="mirror">MediaFire Mirror</span>
+            </div>
+            <h2>GRAND THEFT AUTO: SAN ANDREAS</h2>
+            <p>Descarga el juego base GTA San Andreas original y limpio para evitar bugs o caídas en la carga de texturas HD del servidor.</p>
+            <button class="download-btn" onclick="openLink(GTA_DOWNLOAD_URL)">DESCARGAR GTA SAN ANDREAS　↗</button>
+        </article>
+
+        <article class="download-card blue">
+            <div class="card-head">
+                <span class="badge">2. CLIENTE MULTIJUGADOR</span>
+                <span class="mirror">Web Oficial</span>
+            </div>
+            <h2>MULTI THEFT AUTO (MTA:SA)</h2>
+            <p>Instala el cliente oficial gratuito para conectarte a las calles de Latin York. Requiere tener el GTA San Andreas instalado.</p>
+            <button class="download-btn" onclick="openLink(MTA_DOWNLOAD_URL)">DESCARGAR CLIENTE MTA:SA　↗</button>
+        </article>
+    </section>
+
+    <section class="bottom-grid">
+        <article class="news">
+            <div class="news-title">
+                <h3>● ANUNCIOS Y NOVEDADES DE LATIN YORK</h3>
+                <span class="latest">ÚLTIMA HORA</span>
+            </div>
+
+            <div class="news-item">
+                <h4>⚡ ACTUALIZACIÓN DEL SERVIDOR Y CALIBRACIÓN DEL ROL <span>Hace unas horas</span></h4>
+                <p>Se ha implementado una optimización mayor en el motor de sincronización de vehículos. Además, se agregaron nuevas gasolineras interactivas en Queens y se balanceó el consumo general en los trabajos pesados.</p>
+            </div>
+
+            <div class="news-item">
+                <h4>🚔 ACADEMIA NYPD Y PATRULLAS DE NUEVA GENERACIÓN <span>Ayer</span></h4>
+                <p>El Departamento de Policía de Nueva York adquiere un nuevo lote de vehículos patrulla blindados con radar de alta frecuencia. Se prepara una nueva academia para cadetes.</p>
+            </div>
+
+            <div class="news-item">
+                <h4>▶ BONUS EN ENTREGAS Y MECÁNICOS LOS CUSTOM <span>Hace 3 días</span></h4>
+                <p>Los trabajos de entrega y mecánica reciben bonificaciones durante el evento semanal.</p>
+            </div>
+        </article>
+
+        <article class="technical">
+            <div class="technical-title">
+                <h3>▣ FICHA TÉCNICA DE RED</h3>
+            </div>
+
+            <div class="tech-row"><small>MAPA ACTUAL:</small><strong>Latin York GTA V Scale (Mass)</strong></div>
+            <div class="tech-row"><small>MODO DE JUEGO:</small><strong>LY:RP v2.4 (Roleplay)</strong></div>
+            <div class="tech-row"><small>JUGADORES EN JUEGO:</small><strong class="green">42 de 150 activos</strong></div>
+            <div class="tech-row"><small>MTA VERSIÓN:</small><strong>MTA:SA 1.6+</strong></div>
+            <div class="tech-row"><small>IP DE RED:</small><strong class="green">194.58.66.199</strong></div>
+            <div class="tech-row"><small>PUERTO:</small><strong>2513</strong></div>
+        </article>
+    </section>
+</section>
+
+<!-- =====================================================
+     GUÍA DE ROL — AQUÍ VA EL CONTENIDO QUE ESTABA ANTES
+===================================================== -->
+<section id="guide" class="page">
+
+    <div class="guide-title">
+        <div class="section-label">◎ GUÍA DE ROL</div>
+        <h1>Aprende a jugar en Latin York</h1>
+        <p>Todo lo que necesitas conocer antes de entrar a la ciudad y comenzar tu historia.</p>
+    </div>
+
+    <div class="guide-grid">
+        <aside class="guide-sidebar">
+            <div class="section-label">CONTENIDO</div>
+            <div class="guide-list">
+                <button class="guide-btn active" data-guide="basico">Conceptos básicos de Roleplay</button>
+                <button class="guide-btn" data-guide="normas">Normas de la ciudad</button>
+                <button class="guide-btn" data-guide="trabajos">Trabajos disponibles</button>
+                <button class="guide-btn" data-guide="policia">NYPD y facciones legales</button>
+                <button class="guide-btn" data-guide="ilegal">Pandillas y organizaciones</button>
+            </div>
+        </aside>
+
+        <article class="guide-main">
+
+            <div id="basico" class="guide-section active">
+                <h2>Conceptos básicos de Roleplay</h2>
+                <p>
+                    En Latin York debes interpretar a tu personaje respetando su historia,
+                    personalidad y las situaciones que ocurren dentro de la ciudad.
+                </p>
+                <div class="role-grid">
+                    <div class="role-card"><h3>IC — In Character</h3><p>Todo lo que tu personaje sabe, hace y dice dentro de la ciudad.</p></div>
+                    <div class="role-card"><h3>OOC — Out Of Character</h3><p>Información o conversaciones que ocurren fuera del personaje.</p></div>
+                    <div class="role-card"><h3>MG — Metagaming</h3><p>No utilices información obtenida fuera del juego para beneficiar a tu personaje.</p></div>
+                    <div class="role-card"><h3>PG — Powergaming</h3><p>Evita realizar acciones irreales o forzar una situación sin dar oportunidad de reacción.</p></div>
+                </div>
+            </div>
+
+            <div id="normas" class="guide-section">
+                <h2>Normas de la ciudad</h2>
+                <p>Respeta las normas del servidor, a los demás jugadores y las situaciones de rol.</p>
+                <div class="role-grid">
+                    <div class="role-card"><h3>Respeto</h3><p>No insultes ni provoques a otros jugadores fuera de una situación de rol.</p></div>
+                    <div class="role-card"><h3>Valor de vida</h3><p>Tu personaje debe reaccionar de forma coherente ante situaciones peligrosas.</p></div>
+                    <div class="role-card"><h3>Conducción</h3><p>Conduce de acuerdo con la situación y evita utilizar vehículos de forma irreal.</p></div>
+                    <div class="role-card"><h3>Administración</h3><p>Los problemas o reportes deben tratarse mediante los canales establecidos.</p></div>
+                </div>
+            </div>
+
+            <div id="trabajos" class="guide-section">
+                <h2>Trabajos disponibles</h2>
+                <p>Empieza tu vida en la ciudad eligiendo una profesión y gana dinero de manera legal.</p>
+                <div class="role-grid">
+                    <div class="role-card"><h3>Basurero Urbano</h3><p>Recoge residuos y completa rutas por la ciudad.</p></div>
+                    <div class="role-card"><h3>Taxista</h3><p>Transporta pasajeros por los distintos barrios de Nueva York.</p></div>
+                    <div class="role-card"><h3>Mecánico</h3><p>Repara vehículos y ayuda a otros ciudadanos.</p></div>
+                    <div class="role-card"><h3>Repartidor</h3><p>Realiza entregas y completa rutas de reparto.</p></div>
+                </div>
+            </div>
+
+            <div id="policia" class="guide-section">
+                <h2>NYPD y facciones legales</h2>
+                <p>Las facciones legales mantienen el orden de la ciudad y cuentan con procedimientos propios.</p>
+                <div class="role-grid">
+                    <div class="role-card"><h3>NYPD</h3><p>Patrulla, responde a emergencias, realiza detenciones y controla el tráfico.</p></div>
+                    <div class="role-card"><h3>FDNY / EMS</h3><p>Atiende emergencias, incendios y situaciones médicas.</p></div>
+                </div>
+            </div>
+
+            <div id="ilegal" class="guide-section">
+                <h2>Pandillas y organizaciones</h2>
+                <p>Las organizaciones ilegales forman parte del rol de la ciudad y deben respetar las reglas establecidas.</p>
+                <div class="role-grid">
+                    <div class="role-card"><h3>The Latin Kings</h3><p>Organización criminal con presencia en diferentes zonas de la ciudad.</p></div>
+                    <div class="role-card"><h3>La Familia</h3><p>Grupo organizado que participa en diferentes actividades ilegales.</p></div>
+                </div>
+            </div>
+
+        </article>
+    </div>
+</section>
+
+<!-- =====================================================
+     YORKY AI
+===================================================== -->
+<section id="yorky" class="page">
+  <div class="yk-grid">
+
+    <aside class="yk-side">
+        <div class="yk-brand">
+            <div class="yk-icon">✦</div>
+            <div><strong>YORKY MENTOR AI</strong><small>Powered by Gemini Flash</small></div>
+        </div>
+
+        <p class="yk-desc">
+            Nuestra Inteligencia Artificial está especialmente entrenada con toda la lore de
+            <b>Latin York RP</b>, las normativas civiles, los soplos del Bronx y la jerga neoyorquina moderna.
+        </p>
+
+        <div class="yk-tools-title">HERRAMIENTAS INSTANTÁNEAS DE IA:</div>
+
+        <button class="yk-tool" data-tool="story">
+            <span class="ic">📖</span>
+            <span class="tx"><strong>CREADOR DE HISTORIAS</strong><small>Backstory premium para Whitelist</small></span>
+            <span class="ar">›</span>
+        </button>
+        <button class="yk-tool" data-tool="lexicon">
+            <span class="ic blue">&gt;_</span>
+            <span class="tx"><strong>LÉXICO DE LA CALLE NY</strong><small>Diccionario de jerga, códigos y slang</small></span>
+            <span class="ar">›</span>
+        </button>
+        <button class="yk-tool" data-tool="map">
+            <span class="ic purple">◎</span>
+            <span class="tx"><strong>MAPA MASIVO GTA V</strong><small>Suelos, distritos y puntos de interés</small></span>
+            <span class="ar">›</span>
+        </button>
+
+        <div class="yk-tip">
+            <b class="t">PROTIP DE COMANDOS:</b>
+            Usa <code>/me</code> para describir acciones físicas de tu personaje e <code>/do</code> para describir el entorno externo u objetos.
+        </div>
+    </aside>
+
+    <section class="yk-chat">
+        <div class="yk-head">
+            <div class="yk-avatar">YK</div>
+            <div>
+                <strong>YORKY (Mentor Oficial)</strong>
+                <small id="ykStatus">● Inteligencia Activa</small>
+            </div>
+            <button class="yk-clear" id="ykClear">Borrar Historial</button>
+        </div>
+
+        <div class="yk-msgs" id="ykMsgs"></div>
+
+        <div class="yk-chips">
+            <button class="yk-chip">¿Qué es Metagaming?</button>
+            <button class="yk-chip">¿Cómo unirme a policía NYPD?</button>
+            <button class="yk-chip">Sueldo de Camionero</button>
+            <button class="yk-chip">Comando /me y /do</button>
+        </div>
+
+        <div class="yk-input">
+            <input id="ykInput" type="text" autocomplete="off" placeholder="Pregúntale a Yorky sobre comandos, sueldos, facciones o cómo rolear...">
+            <button class="yk-send" id="ykSend" title="Enviar">➤</button>
+        </div>
+    </section>
+
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+/* ---------- FONDO DE VIDEO ----------
+   Arreglo del error de YouTube (153 / "no disponible"):
+   se usa la API oficial IFrame, que envía el origen correcto, y si el video
+   falla se cae a un fondo animado en lugar de quedar en negro. */
+/* SONIDO: activado por defecto.
+   Los navegadores no dejan sonar un video hasta que la persona hace su primer
+   clic/toque/tecla en la página, así que el video arranca y el audio se
+   activa solo en ese primer gesto (sin avisos ni preguntas).
+   El botón de la barra superior lo silencia o reactiva. */
+let soundOn=true, userActivated=false, bgVideoEl=null;
+
+function ytCmd(func,args){
+    document.querySelectorAll("#youtube-bg iframe").forEach(f=>{
+        try{
+            f.contentWindow.postMessage(JSON.stringify({event:"command",func:func,args:args||[]}),"*");
+        }catch(e){}
+    });
+}
+function renderSoundUI(){
+    document.getElementById("soundBtn").textContent=soundOn?"🔊":"🔇";
+    document.getElementById("musicLbl").textContent=soundOn?"MÚSICA ON":"MÚSICA OFF";
+}
+function applySound(){
+    if(!userActivated) return;
+    if(bgVideoEl){
+        bgVideoEl.muted=!soundOn;
+        if(soundOn) bgVideoEl.play().catch(()=>{});
+    }
+    if(soundOn){ ytCmd("unMute"); ytCmd("setVolume",[70]); ytCmd("playVideo"); }
+    else       { ytCmd("mute"); }
+}
+function setSound(on){
+    soundOn=on; userActivated=true;
+    renderSoundUI(); applySound();
+}
+document.querySelectorAll(".snd").forEach(b=>b.addEventListener("click",()=>setSound(!soundOn)));
+["pointerdown","keydown","touchstart"].forEach(evt=>{
+    document.addEventListener(evt,()=>{ userActivated=true; applySound(); },{once:true});
+});
+renderSoundUI();
+
+function showBackgroundFallback(reason){
+    console.warn("[Fondo] Video de YouTube no disponible:", reason);
+    const box=document.getElementById("youtube-bg");
+    box.querySelectorAll("iframe,video").forEach(el=>el.remove());
+}
+
+function loadYoutubeBackground(){
+    const box=document.getElementById("youtube-bg");
+
+    /* Opción 1: video local */
+    if(BACKGROUND_VIDEO_FILE){
+        const v=document.createElement("video");
+        v.src=BACKGROUND_VIDEO_FILE;
+        v.autoplay=true; v.muted=true; v.loop=true; v.playsInline=true;
+        v.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover";
+        v.addEventListener("error",()=>showBackgroundFallback("archivo local no encontrado"));
+        box.appendChild(v);
+        bgVideoEl=v;
+        /* intenta con sonido; si el navegador lo bloquea, arranca mudo y lo activa en el primer gesto */
+        v.muted=false;
+        v.play().catch(()=>{ v.muted=true; v.play().catch(()=>{}); });
+        return;
+    }
+
+    /* Opción 2: YouTube con iframe directo (sin depender del script iframe_api).
+       Prueba varios servidores y detecta errores con postMessage. */
+    const HOSTS=[
+        "https://www.youtube-nocookie.com",
+        "https://www.youtube.com"
+    ];
+    let hostIndex=0, playing=false, timer=null, sawError=false;
+
+    function tryHost(){
+        if(playing) return;
+        clearTimeout(timer);
+        if(hostIndex>=HOSTS.length){
+            if(sawError) showBackgroundFallback("YouTube devolvió un error de reproducción");
+            else console.info("[Fondo] Sin confirmación de YouTube; se mantiene el video por si sí está reproduciendo.");
+            return;
+        }
+        box.querySelectorAll("iframe").forEach(el=>el.remove());
+        const host=HOSTS[hostIndex++];
+        const params=new URLSearchParams({
+            autoplay:1,mute:1,controls:0,loop:1,playlist:YOUTUBE_VIDEO_ID,
+            playsinline:1,rel:0,modestbranding:1,iv_load_policy:3,
+            disablekb:1,fs:0,enablejsapi:1
+        });
+        if(location.protocol==="http:"||location.protocol==="https:")
+            params.set("origin",location.origin);
+
+        const f=document.createElement("iframe");
+        f.src=host+"/embed/"+encodeURIComponent(YOUTUBE_VIDEO_ID)+"?"+params.toString();
+        f.allow="autoplay; encrypted-media; picture-in-picture";
+        f.referrerPolicy="strict-origin-when-cross-origin";
+        f.setAttribute("frameborder","0");
+        f.title="Fondo Latin York";
+        f.addEventListener("load",()=>{
+            try{
+                /* pide al reproductor que nos avise de errores y estado */
+                f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*");
+                ["onError","onStateChange"].forEach(ev=>
+                    f.contentWindow.postMessage(JSON.stringify({event:"command",func:"addEventListener",args:[ev],id:1,channel:"widget"}),"*"));
+                setTimeout(applySound,400);
+            }catch(e){}
+        });
+        box.appendChild(f);
+
+        /* si en 9 s no está reproduciendo, prueba el siguiente servidor */
+        timer=setTimeout(tryHost,9000);
+    }
+
+    window.addEventListener("message",ev=>{
+        if(!/^https:\/\/www\.youtube(-nocookie)?\.com$/.test(ev.origin)) return;
+        let d=ev.data;
+        if(typeof d==="string"){ try{d=JSON.parse(d);}catch(e){return;} }
+        if(!d) return;
+        const state = d.event==="onStateChange" ? d.info
+                    : (d.event==="infoDelivery" && d.info && d.info.playerState!==undefined) ? d.info.playerState
+                    : null;
+        if(state===1||state===3){ playing=true; clearTimeout(timer); applySound(); }
+        if(d.event==="onError"){ sawError=true; console.warn("[Fondo] error YouTube, código:",d.info); tryHost(); }
+    });
+
+    tryHost();
+}
+
+function connectServer(){
+    window.location.href=SERVER_CONNECT_URL;
+}
+
+function openLink(url){
+    if(url && url!=="#") window.open(url,"_blank");
+    else alert("Configura el enlace de descarga en GTA_DOWNLOAD_URL o MTA_DOWNLOAD_URL.");
+}
+
+/* Hora */
+function updateClock(){
+    const now=new Date();
+    const time=new Intl.DateTimeFormat("en-US",{
+        timeZone:"America/New_York",
+        hour:"2-digit",minute:"2-digit",second:"2-digit",
+        hour12:true
+    }).format(now);
+    document.getElementById("clock").textContent=time+" EST";
+}
+setInterval(updateClock,1000);
+updateClock();
+
+/* Navegación principal */
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        const page=btn.dataset.page;
+        if(!page) return;
+
+        document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+        btn.classList.add("active");
+
+        document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+        document.getElementById(page).classList.add("active");
+
+        document.querySelector(".content").scrollTop=0;
+    });
+});
+
+/* Navegación de la guía */
+document.querySelectorAll(".guide-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        document.querySelectorAll(".guide-btn").forEach(x=>x.classList.remove("active"));
+        btn.classList.add("active");
+
+        document.querySelectorAll(".guide-section").forEach(x=>x.classList.remove("active"));
+        document.getElementById(btn.dataset.guide).classList.add("active");
+    });
+});
+
+/* =========================================================
+   YORKY AI — CHAT
+========================================================= */
+const YK_SYSTEM = `Eres Yorky, el mentor oficial e inteligencia artificial de Latin York RP, un servidor de roleplay de Multi Theft Auto: San Andreas ambientado en una Nueva York estilo GTA V con herencia de barrio latino (Bronx, Queens, Brooklyn, Manhattan), con NYPD, FDNY/EMS, pandillas y trabajos legales.
+Personalidad: cercano, callejero y amigable, con jerga latina neoyorquina ligera ("compadre", "¡Epa!", "parcero"), sin pasarte ni ser ofensivo. Respondes siempre en español, de forma clara y breve (máximo ~150 palabras salvo que pidan una historia o un listado largo).
+Conocimiento base: conceptos de rol (IC, OOC, MG metagaming, PG powergaming, valor de vida, /me para acciones físicas del personaje, /do para describir el entorno u objetos), códigos de radio y jerga de NY, ayuda para crear backstories de whitelist realistas.
+REGLA IMPORTANTE: NO inventes datos específicos del servidor (sueldos exactos, requisitos de facciones, nombres de staff, reglas concretas, coordenadas). Si te preguntan algo así y no lo sabes con certeza, da la información general del rol y recomienda confirmar con el staff o en el Discord del servidor.
+Si preguntan algo ajeno al roleplay, GTA, MTA o Latin York, responde brevemente y devuelve la conversación al rol. Nunca generes contenido sexual explícito, odio real ni instrucciones para dañar a personas reales.`;
+
+const YK_WELCOME = "¡Epa compadre! Bienvenido a Latin York RP. Soy Yorky, tu mentor e inteligencia artificial de confianza. ¿Quieres saber sobre los trabajos mejor pagados, cómo entrar en el NYPD, aprender las normativas de rol o conocer las noticias del barrio? Dime qué callejón quieres patrullar hoy.";
+
+const ykMsgs=document.getElementById("ykMsgs");
+const ykInput=document.getElementById("ykInput");
+const ykSend=document.getElementById("ykSend");
+const ykStatus=document.getElementById("ykStatus");
+let ykHistory=[];      /* {role:"user"|"model", text} */
+let ykBusy=false;
+
+if(!GEMINI_API_KEY){
+    ykStatus.textContent="● Modo offline (sin API key)";
+    ykStatus.classList.add("off");
+}
+
+function ykFormat(t){
+    let s=String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    s=s.replace(/`([^`]+)`/g,"<code>$1</code>");
+    s=s.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+    s=s.replace(/^\s*[-*•]\s+(.*)$/gm,"<span class='li'>• $1</span>");
+    return s.replace(/\n/g,"<br>");
+}
+function ykTime(){
+    return new Date().toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit"});
+}
+function ykAdd(role,text){
+    const d=document.createElement("div");
+    d.className="msg "+(role==="user"?"user":"bot");
+    d.innerHTML=ykFormat(text)+"<time>"+ykTime()+"</time>";
+    ykMsgs.appendChild(d);
+    ykMsgs.scrollTop=ykMsgs.scrollHeight;
+    return d;
+}
+function ykTyping(on){
+    const old=document.getElementById("ykTyping");
+    if(old) old.remove();
+    if(on){
+        const d=document.createElement("div");
+        d.id="ykTyping"; d.className="msg typing";
+        d.innerHTML="<i></i><i></i><i></i>";
+        ykMsgs.appendChild(d);
+        ykMsgs.scrollTop=ykMsgs.scrollHeight;
+    }
+}
+function ykReset(){
+    ykHistory=[];
+    ykMsgs.innerHTML="";
+    ykAdd("bot",YK_WELCOME);
+}
+
+/* Respuestas básicas cuando no hay API key */
+function ykOffline(q){
+    const t=q.toLowerCase().slice(0,200);
+    if(t.includes("metagam")||t.includes(" mg"))
+        return "**Metagaming (MG)** es usar información que tu personaje no conoce (la que viste en Discord, stream o por OOC) para ganar ventaja dentro del rol. Si tu personaje no lo vio ni lo escuchó, tu personaje no lo sabe. ¡Así de simple, compadre!";
+    if(t.includes("powergam")||t.includes(" pg"))
+        return "**Powergaming (PG)** es forzar acciones irreales o sin dar chance de reacción al otro jugador. Siempre deja espacio para que el otro rolee su respuesta.";
+    if(t.includes("/me")||t.includes("/do")||t.includes("comando"))
+        return "Usa `/me` para describir **acciones físicas** de tu personaje (ej: `/me saca su licencia de la billetera`) y `/do` para describir el **entorno u objetos** (ej: `/do Se ve una licencia plastificada.`).";
+    if(t.includes("nypd")||t.includes("polic"))
+        return "Para entrar al **NYPD** normalmente debes pasar la whitelist, tener un personaje con historia limpia y aplicar a la academia cuando abran reclutamiento. Los requisitos exactos los confirma el staff, así que pásate por el Discord y revisa los anuncios.";
+    if(t.includes("sueldo")||t.includes("camion")||t.includes("pag"))
+        return "Los sueldos exactos los define el servidor y pueden cambiar con las actualizaciones, así que no te quiero inventar números. Revisa la pestaña **Guía de Rol → Trabajos** o pregunta al staff.";
+    return "Ahora mismo estoy en **modo offline**, así que solo manejo respuestas básicas (metagaming, /me y /do, NYPD, sueldos). Para conversar libre conmigo, el admin debe poner la `GEMINI_API_KEY` en el launcher.";
+}
+
+
+/* =========================================================
+   HERRAMIENTAS ALEATORIAS DE YORKY
+   Cada clic genera algo distinto (con o sin API key).
+========================================================= */
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function pickN(arr,n){
+    const c=arr.slice(),out=[];
+    while(out.length<n&&c.length) out.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);
+    return out;
+}
+
+const FN_M=["Carlos","Luis","Miguel","Jonathan","Ángel","Rafael","Anthony","Julio","Elías","Dante","Ramón","Wilson","Josué","Kevin","Orlando","Santiago"];
+const FN_F=["Camila","Yaritza","Marisol","Daniela","Génesis","Valeria","Kiara","Luz","Nathalia","Yamilet","Dayana","Lourdes","Ariana","Mariela","Estefany","Rosalía"];
+const LN=["Rivera","Santana","Mendoza","Cruz","Peña","Vargas","Ortiz","Batista","Morales","Reyes","Guzmán","Colón","Pacheco","Núñez","Rosario","Figueroa","Delgado","Acosta"];
+const LUGARES=[
+    {l:"Santo Domingo, República Dominicana",gent:"dominicanos"},
+    {l:"Santiago de los Caballeros, República Dominicana",gent:"dominicanos"},
+    {l:"San Juan, Puerto Rico",gent:"puertorriqueños"},
+    {l:"Ponce, Puerto Rico",gent:"puertorriqueños"},
+    {l:"Medellín, Colombia",gent:"colombianos"},
+    {l:"Cali, Colombia",gent:"colombianos"},
+    {l:"Puebla, México",gent:"mexicanos"},
+    {l:"Guayaquil, Ecuador",gent:"ecuatorianos"},
+    {l:"La Habana, Cuba",gent:"cubanos"},
+    {l:"Caracas, Venezuela",gent:"venezolanos"},
+    {l:"San Salvador, El Salvador",gent:"salvadoreños"}
+];
+const BARRIOS=["el Bronx","Queens","Brooklyn","Harlem","Washington Heights","Staten Island","Sunset Park","Corona, Queens"];
+const OCUPS=[
+    ["mecánico en un taller de Queens","mecánica en un taller de Queens"],
+    ["taxista de turno nocturno","taxista de turno nocturno"],
+    ["repartidor de comida en bicicleta","repartidora de comida en bicicleta"],
+    ["operario de recolección de basura","operaria de recolección de basura"],
+    ["cadete que sueña con entrar al NYPD","cadete que sueña con entrar al NYPD"],
+    ["paramédico voluntario","paramédica voluntaria"],
+    ["encargado de una bodega","encargada de una bodega"],
+    ["barbero","barbera"],
+    ["cocinero en un restaurante de comida caribeña","cocinera en un restaurante de comida caribeña"],
+    ["obrero de construcción","obrera de construcción"],
+    ["mensajero en Manhattan","mensajera en Manhattan"],
+    ["DJ en fiestas de barrio","DJ en fiestas de barrio"]
+];
+const RASGOS=[["reservado","reservada"],["bromista","bromista"],["leal","leal"],["desconfiado","desconfiada"],["trabajador","trabajadora"],["impulsivo","impulsiva"],["observador","observadora"],["orgulloso","orgullosa"],["soñador","soñadora"],["terco","terca"]];
+
+function ykStorySeed(){
+    const f=Math.random()<0.5, i=f?1:0;
+    const lugar=pick(LUGARES);
+    return {
+        f:f,
+        nombre:pick(f?FN_F:FN_M)+" "+pick(LN),
+        lugar:lugar,
+        nacidoNY:Math.random()<0.25,
+        barrio:pick(BARRIOS),
+        edad:rnd(19,45),
+        llegada:rnd(3,15),
+        ocup:pick(OCUPS)[i],
+        ocupM:pick(OCUPS)[0],
+        rasgos:pickN(RASGOS,2).map(r=>r[i])
+    };
+}
+
+/* Historia aleatoria SIN IA (modo offline) */
+function ykRandomStory(){
+    const x=ykStorySeed(), G=(m,fe)=>x.f?fe:m;
+    const familia=pick(["sus padres","su madre y sus hermanos","sus abuelos","un tío que ya vivía en la ciudad"]);
+    const apertura = x.nacidoNY
+        ? "Nació en "+x.barrio+", "+G("hijo","hija")+" de inmigrantes "+x.lugar.gent+"."
+        : "Nació en "+x.lugar.l+" y llegó a Nueva York a los "+x.llegada+" años junto a "+familia+".";
+    const infancia=pick([
+        "Creció entre el ruido del tren elevado y la bodega que atendía su tío.",
+        "Pasó su infancia ayudando en una lavandería de la esquina mientras soñaba con algo más grande.",
+        "Aprendió a defenderse pronto en las canchas de baloncesto del vecindario.",
+        "Se crió con sus abuelos mientras sus padres trabajaban dobles turnos.",
+        "Creció escuchando bachata, salsa y reggaetón en cada ventana del edificio.",
+        "Fue "+G("un estudiante callado","una estudiante callada")+" que dibujaba en los cuadernos en vez de hacer la tarea."
+    ]);
+    const evento=pick([
+        "A los 16 años un incendio en su edificio le enseñó lo frágil que puede ser todo lo que uno tiene.",
+        "Cuando su familia perdió una fuente de ingresos, tuvo que dejar la escuela y salir a trabajar.",
+        "Un aumento de la renta obligó a su familia a mudarse y "+G("lo","la")+" separó de sus amigos de toda la vida.",
+        "Un vecino policía retirado le contaba historias de patrulla que le marcaron para siempre.",
+        "Tras ver un robo en la bodega familiar, decidió que nunca volvería a sentirse "+G("indefenso","indefensa")+".",
+        "La muerte de un amigo cercano cambió su rumbo y le hizo replantearse todo."
+    ]);
+    const hoy="Hoy, a los "+x.edad+" años, vive en "+x.barrio+" y trabaja como "+x.ocup+".";
+    const conflicto=pick([
+        "Su mayor problema es el dinero: la renta sube cada año y no siempre alcanza.",
+        "Le cuesta confiar en la gente, aunque trata de disimularlo con una sonrisa.",
+        "Arrastra una deuda con alguien peligroso del barrio y procura no llamar la atención.",
+        "Es fiel a su familia, pero esconde un pasado que prefiere no recordar.",
+        "Está "+G("harto","harta")+" de que "+G("lo","la")+" juzguen por su acento y por su barrio."
+    ]);
+    const meta=pick([
+        "Quiere abrir su propio negocio y dejar atrás las deudas.",
+        "Sueña con una vida tranquila para su familia, lejos de los problemas de la calle.",
+        "Busca ganarse el respeto del barrio sin traicionar sus principios.",
+        "Quiere demostrar que se puede salir adelante por la vía honesta.",
+        "Aspira a unirse a una facción y construir una carrera dentro de la ciudad."
+    ]);
+    return "**"+x.nombre+"**, "+x.edad+" años · "+x.ocup+"\n\n"+
+        apertura+" "+infancia+"\n\n"+
+        evento+" "+hoy+"\n\n"+
+        conflicto+" "+meta+"\n\n"+
+        "**Personalidad:** "+x.rasgos[0]+" y "+x.rasgos[1]+".\n\n"+
+        "Pulsa de nuevo el botón para generar otra historia distinta, o ajústala a tu gusto antes de enviarla a la whitelist.";
+}
+
+/* Prompt para la IA (cada vez con datos distintos para que no se repita) */
+function ykStoryPrompt(){
+    const x=ykStorySeed();
+    return "Escribe YA, sin hacerme preguntas antes, la historia (backstory) completa de un personaje original para la Whitelist de Latin York RP. "+
+        "Usa estos datos aleatorios como base: nombre "+x.nombre+" ("+(x.f?"femenino":"masculino")+"), "+x.edad+" años, "+
+        (x.nacidoNY?"nacido en "+x.barrio+", hijo de inmigrantes "+x.lugar.gent:"nacido en "+x.lugar.l+" y llegado a NY a los "+x.llegada+" años")+
+        ", vive en "+x.barrio+", ocupación: "+x.ocupM+", rasgos de personalidad: "+x.rasgos.join(" y ")+". "+
+        "Escribe unas 250 palabras en 3 párrafos, tono realista, con un conflicto y una meta personal, sin powergaming, sin superpoderes ni coincidencias imposibles, coherente con Nueva York. "+
+        "Termina con una línea de 'Datos rápidos'. Debe ser distinta a cualquier historia anterior de esta conversación. Semilla: "+Math.random().toString(36).slice(2,8)+".";
+}
+
+/* Léxico */
+const LEXICO=[
+    ["Parcero","amigo cercano (Colombia)"],["Pana","amigo, compañero"],["Manito","hermano o amigo cercano"],
+    ["Wepa","exclamación de alegría o aprobación (Puerto Rico)"],["Corillo","grupo de amigos (Puerto Rico)"],
+    ["Bodega","tienda de barrio abierta casi todo el día"],["Chévere","algo bueno o genial"],["Bochinche","chisme o alboroto"],
+    ["Tato","'vale', 'está bien' (R. Dominicana)"],["Qué lo qué","saludo dominicano: '¿qué tal?'"],["Cuadra","manzana o cuadra del barrio"],
+    ["Guagua","autobús"],["Jevi","genial, de buena calidad (Puerto Rico)"],["Tiguere","persona astuta y callejera (R. Dominicana)"],
+    ["Bacano","excelente, muy bueno"],["Pichear","dejar pasar algo o rechazar una oferta"],["Chavo","dinero (Caribe)"],
+    ["10-4","mensaje recibido (radio)"],["10-20","ubicación actual (radio)"],["10-8","en servicio y disponible (radio)"],
+    ["10-7","fuera de servicio (radio)"],["Código 3","respuesta urgente con sirenas y luces"],["Backup","solicitud de refuerzos"],
+    ["Ride","vehículo, 'carro' en slang de NY"],["Block","manzana o zona del barrio"],["Crew","tu grupo o pandilla"]
+];
+function ykRandomLexicon(){
+    return "**Léxico de la calle NY** (aleatorio, pulsa otra vez para ver otros términos)\n\n"+
+        pickN(LEXICO,8).map(t=>"- **"+t[0]+"**: "+t[1]).join("\n")+
+        "\n\nPuedes preguntarme por cualquier palabra y te digo cómo usarla al rolear.";
+}
+
+/* Mapa */
+function ykMapText(){
+    return "**Mapa de Latin York (resumen general)**\n\n"+
+        "Es un mapa masivo estilo GTA V con distritos inspirados en Nueva York: zonas residenciales latinas (Bronx, Queens), áreas comerciales y financieras (Manhattan), barrios con vida nocturna (Brooklyn) y puntos clave como comisarías del NYPD, hospitales, talleres y bodegas.\n\n"+
+        "No tengo el detalle exacto de coordenadas ni de cada punto, así que para ubicaciones precisas pregunta al staff o revisa los anuncios del servidor.";
+}
+
+function ykRunTool(tool){
+    if(tool==="story")
+        return ykSendMessage(ykStoryPrompt(),{display:"📖 Crear una historia de personaje (aleatoria)",temp:1.1,maxTokens:1400,offline:ykRandomStory});
+    if(tool==="lexicon")
+        return ykSendMessage("Dame 8 términos distintos de jerga latina de Nueva York y códigos de radio de policía, con significado breve y un ejemplo de uso al rolear. Elige términos variados, no siempre los más obvios. Semilla: "+Math.random().toString(36).slice(2,8)+".",
+            {display:"> Léxico de la calle NY",temp:1.1,offline:ykRandomLexicon});
+    if(tool==="map")
+        return ykSendMessage("Explícame de forma general cómo es el mapa masivo estilo GTA V de Latin York: tipos de zonas y puntos de interés para un jugador nuevo. Si no sabes algo con certeza, dilo.",
+            {display:"🗺 Mapa masivo GTA V",offline:ykMapText});
+}
+
+/* Modelos a probar en orden si el principal está saturado o retirado */
+function ykModels(){
+    const list=[GEMINI_MODEL,"gemini-flash-latest","gemini-flash-lite-latest"];
+    return list.filter((m,i)=>m&&list.indexOf(m)===i);
+}
+const ykSleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function ykCall(model,opts){
+    const url="https://generativelanguage.googleapis.com/v1beta/models/"+
+        encodeURIComponent(model)+":generateContent?key="+encodeURIComponent(GEMINI_API_KEY);
+    const body={
+        systemInstruction:{parts:[{text:YK_SYSTEM}]},
+        contents:ykHistory.slice(-14).map(m=>({role:m.role,parts:[{text:m.text}]})),
+        generationConfig:{temperature:(opts&&opts.temp)||0.8,maxOutputTokens:(opts&&opts.maxTokens)||900}
+    };
+    let res;
+    try{
+        res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    }catch(e){
+        const err=new Error("No hay conexión con Google. Revisa tu internet.");
+        err.kind="network"; throw err;
+    }
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok){
+        const msg=(data.error&&data.error.message)||("HTTP "+res.status);
+        const err=new Error(msg);
+        err.status=res.status;
+        if(res.status===429||res.status>=500) err.kind="busy";           /* saturado: reintentar */
+        else if(res.status===404||/no longer available|not found|not supported/i.test(msg)) err.kind="model"; /* modelo retirado: probar otro */
+        else err.kind="fatal";                                            /* clave inválida, etc. */
+        throw err;
+    }
+    const parts=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts;
+    const out=parts?parts.map(p=>p.text||"").join(""):"";
+    if(!out){ const err=new Error("Respuesta vacía (puede haber sido filtrada)."); err.kind="empty"; throw err; }
+    return out;
+}
+
+async function ykAsk(text,opts){
+    if(!GEMINI_API_KEY){
+        await new Promise(r=>setTimeout(r,500));
+        return (opts&&opts.offline)?opts.offline():ykOffline(text);
+    }
+    let lastErr=null;
+    for(const model of ykModels()){
+        for(let attempt=0;attempt<3;attempt++){
+            try{
+                return await ykCall(model,opts);
+            }catch(err){
+                lastErr=err;
+                if(err.kind==="busy"&&attempt<2){ await ykSleep(1200*(attempt+1)); continue; } /* reintenta */
+                break; /* pasa al siguiente modelo */
+            }
+        }
+        if(lastErr&&(lastErr.kind==="fatal"||lastErr.kind==="network")) break;
+    }
+    throw lastErr||new Error("Error desconocido");
+}
+
+async function ykSendMessage(text,opts){
+    text=(text||"").trim();
+    if(!text||ykBusy) return;
+    ykBusy=true; ykSend.disabled=true; ykInput.value="";
+    ykAdd("user",(opts&&opts.display)||text);
+    ykHistory.push({role:"user",text});
+    ykTyping(true);
+    try{
+        const answer=await ykAsk(text,opts);
+        ykTyping(false);
+        ykHistory.push({role:"model",text:answer});
+        ykAdd("bot",answer);
+    }catch(err){
+        ykTyping(false);
+        ykHistory.pop();
+        let hint;
+        if(err.kind==="busy") hint="Google tiene los servidores de IA saturados ahora mismo. Ya probé varias veces y con otros modelos; dame un minuto y vuelve a escribirme.";
+        else if(err.kind==="network") hint=err.message;
+        else if(err.kind==="model") hint="Los modelos configurados ya no están disponibles. Cambia `GEMINI_MODEL` por uno vigente.";
+        else if(err.status===400||err.status===401||err.status===403) hint="Parece un problema con tu API key (inválida, sin permisos o sin cuota). Revísala en aistudio.google.com/apikey.\nDetalle: "+err.message;
+        else hint=err.message;
+        ykAdd("bot","⚠ Se me cayó la señal, compadre.\n\n"+hint);
+    }
+    ykBusy=false; ykSend.disabled=false; ykInput.focus();
+}
+
+ykSend.addEventListener("click",()=>ykSendMessage(ykInput.value));
+ykInput.addEventListener("keydown",e=>{ if(e.key==="Enter") ykSendMessage(ykInput.value); });
+document.querySelectorAll(".yk-chip").forEach(b=>b.addEventListener("click",()=>ykSendMessage(b.textContent)));
+document.querySelectorAll(".yk-tool").forEach(b=>b.addEventListener("click",()=>ykRunTool(b.dataset.tool)));
+document.getElementById("ykClear").addEventListener("click",ykReset);
+ykReset();
+
+/* Transparencia: el botón ◉ alterna entre 3 niveles */
+const UI_LEVELS=[1,0.5,0.15];
+let uiLevel=0;
+document.getElementById("uiBtn").addEventListener("click",()=>{
+    uiLevel=(uiLevel+1)%UI_LEVELS.length;
+    document.documentElement.style.setProperty("--ui",UI_LEVELS[uiLevel]);
+});
+
+loadYoutubeBackground();
+</script>
+</body>
+</html>
